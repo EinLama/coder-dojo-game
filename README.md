@@ -4,12 +4,19 @@ Ein Beispiel-Spiel für das Coder Dojo.
 
 ## Spiel starten
 
+Um das Spiel zu starten braucht man einen Webserver, der die Requests abfertigt. Andernfalls können die Assets nicht geladen werden. Einfach die HTML Datei im Browser aufmachen funktioniert also leider nicht.
+
+Zunächst einmal sollte das Repo geklont werden.
+
 ### Unix (OS X & Linux)
 
-Das Repo klonen und danach im Ordner
+Mit installiertem Python in den Projektordner wechseln und
 
 `python -m SimpleHTTPServer`
 
-ausführen. Das startet einen Webserver auf Port 8000.
+ausführen. Das startet einen Webserver auf Port 8000. Mit installiertem Netcat alternativ: `nc -l 8000`.
 
 Das Spiel ist danach unter http://localhost:8000/part1.html verfügbar, respektive http://localhost:8000/part9.html usw.
+
+Darüber hinaus kann das Projekt auch in den Ordner eines Webservers eurer Wahl (nginx, apache, usw.) gelegt werden. Wenn ihr das macht, wisst ihr ja schon, was ihr tut ;)
+

@@ -6,6 +6,8 @@ Ein Beispiel-Spiel für das Coder Dojo.
 
 Um das Spiel zu starten braucht man einen Webserver, der die Requests abfertigt. Andernfalls können die Assets nicht geladen werden. Einfach die HTML Datei im Browser aufmachen funktioniert also leider nicht.
 
+> Auf Cloud9 ist das dann später kein Problem. Da die HTML-Dateien dort direkt gehosted werden und über das http-Protokoll ausgeliefert werden, muss man dort keinen Webserver starten, sondern kann wie gehabt den Link zu der Datei aufrufen. Das macht es für die Kids einfach, denn es muss kein Shell-Kommando eingegeben werden (obwohl das ja geht, was man Cloud9 sehr zugute halten muss).
+
 Zunächst einmal sollte das Repo geklont werden.
 
 ### Unix (OS X & Linux)

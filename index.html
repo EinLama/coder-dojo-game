@@ -22,9 +22,9 @@
     game.load.image('grassLeft', 'assets/Tiles/grassHalfLeft.png');
     game.load.image('grassRight', 'assets/Tiles/grassHalfRight.png');
     game.load.image('ground', 'assets/Tiles/grass.png');
+    game.load.image('coinBronze', 'assets/Items/coinBronze.png');
     game.load.image('coinGold', 'assets/Items/coinGold.png');
     game.load.image('cloud', 'assets/Items/cloud1.png');
-    //game.load.spritesheet('player', 'assets/Player/p1_walk/p1_walk_fix.png', 66, 97);
     game.load.atlasJSONArray('player','assets/Player/p1_walk/p1_walk.png', 'assets/Player/p1_walk/p1_walk.json');
 
   }
@@ -33,7 +33,9 @@
       tilesprite,
       cursors,
       ground,
-      player;
+      player,
+      platform,
+      score = 0;
 
   function create(){
     // enable physics for the game
@@ -50,60 +52,68 @@
     game.add.sprite(0,0,'cloud');
 
     platforms = game.add.group();
+    platforms.enableBody = true;
+    coins = game.add.group();
+    coins.enableBody = true;
 
     // enable physics for game elements
-    game.physics.enable([ ground, player, platforms ], Phaser.Physics.ARCADE);
+    game.physics.enable([ ground, player, platforms, coins ], Phaser.Physics.ARCADE);
 
     ground.body.collideWorldBounds = true;
     ground.body.immovable = true;
     ground.body.allowGravity = false;
-
-    platforms.enableBody = true;
 
     player.body.bounce.y = 0.2;
     player.body.gravity.y = 300;
     player.body.collideWorldBounds = true;
 
     // game.add.sprite(0,0,'coinGold');
-
-    var ledge = platforms.create(400, 400, 'grassMid');
-
+    for(var i = 0 ; i < 5 ; i++){
+      var coin = coins.create(500+i*70, 330, 'coinBronze');
+    }
+    for(var i = 0 ; i < 6 ; i++){
+      var coin = coins.create(200+i*70, 130, 'coinGold');
+    }
+    platform = game.add.tileSprite(200, 200, 400, 70,'grassMid');
+    var ledge = platforms.add(platform);
     ledge.body.immovable = true;
-
-    ledge = platforms.create(-150, 250, 'grassMid');
-
+    platform = game.add.tileSprite(500, 400, 400, 70,'grassMid');
+    var ledge = platforms.add(platform);
     ledge.body.immovable = true;
-
 
     // save keyboard inputs into variable
     cursors = game.input.keyboard.createCursorKeys();
+
+    scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+
   }
 
   function update(){
     // check for collision
     game.physics.arcade.collide(player, ground);
     game.physics.arcade.collide(player, platforms);
+    // add coin player collision
+    game.physics.arcade.overlap(player, coins, collectCoin, null, this);
     //if no key pressed stay still
     player.body.velocity.x = 0;
     /* move background and ground on camera pan */
     if (cursors.left.isDown){
-        tilesprite.tilePosition.x += 8;
-        ground.tilePosition.x += 4;
+        tilesprite.tilePosition.x += 4;
+        ground.tilePosition.x += 1;
 
         player.scale.x = -1; //facing default direction
         player.body.velocity.x = -100;
         player.animations.play('walk');
     }
     else if (cursors.right.isDown){
-        tilesprite.tilePosition.x -= 8;
-        ground.tilePosition.x -= 4;
+        tilesprite.tilePosition.x -= 4;
+        ground.tilePosition.x -= 1;
 
         player.scale.x = 1; //flipped
         player.body.velocity.x = 100;
         player.animations.play('walk');
     }else{
       player.animations.stop();
-
       player.frame = 4;
     }
 
@@ -113,11 +123,25 @@
     }
 
     if (cursors.up.isDown){
-        tilesprite.tilePosition.y += 8;
+        tilesprite.tilePosition.y += 4;
     }
     else if (cursors.down.isDown){
-        tilesprite.tilePosition.y -= 8;
+        tilesprite.tilePosition.y -= 4;
     }
+  }
+
+  function collectCoin(player,coin){
+    switch(coin.key){
+      case 'coinBronze':
+        score += 10;
+      break;
+      case 'coinGold':
+        score += 20;
+      break;
+    }
+    coin.kill();
+
+    scoreText.text = 'Score: ' + score;
   }
 </script>
 </body>

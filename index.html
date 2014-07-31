@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Coder Dojo</title>
+  <style>
+  body{
+    margin:0;
+    padding:0;
+  }
+  </style>
+</head>
+<body>
+<script type="text/javascript" src="js/phaser.min.js"></script>
+<script>
+  var game = new Phaser.Game(840, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+  function preload() {
+
+    game.load.image('sky', 'assets/bg.png');
+    game.load.image('grassMid', 'assets/Tiles/grassHalfMid.png');
+    game.load.image('grassLeft', 'assets/Tiles/grassHalfLeft.png');
+    game.load.image('grassRight', 'assets/Tiles/grassHalfRight.png');
+    game.load.image('ground', 'assets/Tiles/grass.png');
+    game.load.image('coinGold', 'assets/Items/coinGold.png');
+    game.load.image('cloud', 'assets/Items/cloud1.png');
+    //game.load.spritesheet('player', 'assets/Player/p1_walk/p1_walk_fix.png', 66, 97);
+    game.load.atlasJSONArray('player','assets/Player/p1_walk/p1_walk.png', 'assets/Player/p1_walk/p1_walk.json');
+
+  }
+
+  var platforms,
+      tilesprite,
+      cursors,
+      ground,
+      player;
+
+  function create(){
+    // enable physics for the game
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+    // add the sky as TileSprite for repetition
+    tilesprite = game.add.tileSprite(0,0,840,600,'sky');
+    // add ground to the game
+    ground = game.add.tileSprite(0,game.world.height-70,840,70,'ground'); 
+    // add player to the game
+    player = game.add.sprite(72,game.world.height-167,'player');
+    player.animations.add('walk',[0,1,2,3,4,5,6,7,8,9,10], 30, true, true);
+    player.anchor.setTo(.5, .5); //so it flips around its middle
+    // add random clouds
+    game.add.sprite(0,0,'cloud');
+
+    platforms = game.add.group();
+
+    // enable physics for game elements
+    game.physics.enable([ ground, player, platforms ], Phaser.Physics.ARCADE);
+
+    ground.body.collideWorldBounds = true;
+    ground.body.immovable = true;
+    ground.body.allowGravity = false;
+
+    platforms.enableBody = true;
+
+    player.body.bounce.y = 0.2;
+    player.body.gravity.y = 300;
+    player.body.collideWorldBounds = true;
+
+    // game.add.sprite(0,0,'coinGold');
+
+    var ledge = platforms.create(400, 400, 'grassMid');
+
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(-150, 250, 'grassMid');
+
+    ledge.body.immovable = true;
+
+
+    // save keyboard inputs into variable
+    cursors = game.input.keyboard.createCursorKeys();
+  }
+
+  function update(){
+    // check for collision
+    game.physics.arcade.collide(player, ground);
+    game.physics.arcade.collide(player, platforms);
+    //if no key pressed stay still
+    player.body.velocity.x = 0;
+    /* move background and ground on camera pan */
+    if (cursors.left.isDown){
+        tilesprite.tilePosition.x += 8;
+        ground.tilePosition.x += 4;
+
+        player.scale.x = -1; //facing default direction
+        player.body.velocity.x = -100;
+        player.animations.play('walk');
+    }
+    else if (cursors.right.isDown){
+        tilesprite.tilePosition.x -= 8;
+        ground.tilePosition.x -= 4;
+
+        player.scale.x = 1; //flipped
+        player.body.velocity.x = 100;
+        player.animations.play('walk');
+    }else{
+      player.animations.stop();
+
+      player.frame = 4;
+    }
+
+    if (cursors.up.isDown && player.body.touching.down)
+    {
+        player.body.velocity.y = -350;
+    }
+
+    if (cursors.up.isDown){
+        tilesprite.tilePosition.y += 8;
+    }
+    else if (cursors.down.isDown){
+        tilesprite.tilePosition.y -= 8;
+    }
+  }
+</script>
+</body>
+</html>

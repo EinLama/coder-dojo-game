@@ -2,8 +2,6 @@
 
 ## ToDo
 
-* Coins einsammeln
-* Punkte zählen
 * Gegner hinzufügen
 * Welt ausbauen
 * Smooth Player Animation

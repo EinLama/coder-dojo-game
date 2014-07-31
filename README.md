@@ -1,5 +1,13 @@
 # Coder Dojo Jump & Run
 
+## ToDo
+
+* Coins einsammeln
+* Punkte zählen
+* Gegner hinzufügen
+* Welt ausbauen
+* Smooth Player Animation
+
 Ein Beispiel-Spiel für das Coder Dojo.
 
 ## Spiel starten

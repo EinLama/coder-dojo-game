@@ -18,7 +18,7 @@ Mit installiertem Python in den Projektordner wechseln und
 
 ausführen. Das startet einen Webserver auf Port 8000. Mit installiertem Netcat alternativ: `nc -l 8000`.
 
-Das Spiel ist danach unter http://localhost:8000/part1.html verfügbar, respektive http://localhost:8000/part9.html usw.
+Das Spiel ist danach unter http://localhost:8000/part01.html verfügbar, respektive http://localhost:8000/part10.html usw.
 
 Darüber hinaus kann das Projekt auch in den Ordner eines Webservers eurer Wahl (nginx, apache, usw.) gelegt werden. Wenn ihr das macht, wisst ihr ja schon, was ihr tut ;)
 

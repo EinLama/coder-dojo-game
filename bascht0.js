@@ -4,8 +4,8 @@ function preload() {
 
     game.load.image('sky', 'assets/sky.png');
     game.load.image('ground', 'assets/platform.png');
-    game.load.image('star', 'assets/star.png');
-    game.load.image('crate', 'assets/crate.png');
+    game.load.image('key', 'assets/key.png');
+    game.load.spritesheet('crate', 'assets/crate.png', 32, 32);
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
 
 }
@@ -14,9 +14,10 @@ var player;
 var platforms;
 var cursors;
 
-var stars;
+var keys;
 var crates;
 var score = 0;
+var numberOfItems = 5;
 var scoreText;
 
 function create() {
@@ -57,74 +58,88 @@ function create() {
 
     //  Player physics properties. Give the little guy a slight bounce.
     player.body.bounce.y = 0.1;
-    player.body.gravity.y = 300;
+    player.body.gravity.y = 400;
     player.body.collideWorldBounds = true;
 
     //  Our two animations, walking left and right.
     player.animations.add('left', [0, 1, 2, 3], 10, true);
     player.animations.add('right', [5, 6, 7, 8], 10, true);
 
-    //  Finally some stars to collect
-    stars = game.add.group();
+    //  Finally some keys to collect
+    keys = game.add.group();
 
-    //  We will enable physics for any star that is created in this group
-    stars.enableBody = true;
+    //  We will enable physics for any key that is created in this group
+    keys.enableBody = true;
 
     //  Here we'll create 12 of them evenly spaced apart
-    for (var i = 0; i < 12; i++)
+    for (var i = 0; i < numberOfItems; i++)
     {
-        //  Create a star inside of the 'stars' group
-        var star = stars.create(i * 70, 0, 'star');
+        //  Create a key inside of the 'keys' group
+        var key = keys.create(i * 180, 0, 'key');
 
         //  Let gravity do its thing
-        star.body.gravity.y = 800;
+        key.body.gravity.y = 800;
 
-        //  This just gives each star a slightly random bounce value
-        star.body.bounce.y = 0.7 + Math.random() * 0.2;
+        //  This just gives each key a slightly random bounce value
+        key.body.bounce.y = 0.4 + Math.random() * 0.1;
     }
 
     //  The score
-    scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    scoreText = game.add.text(16, 16, '', { fontSize: '32px', fill: '#000' });
+
 
     crates = game.add.group();
     crates.enableBody = true;
-    var crate = crates.create(300, 400, 'crate');
-    crate.body.gravity.y = 500;
-    crate.body.immovable = false;
-     console.log(crate);
+
+    for (var i = 0; i < numberOfItems; i++) {
+        var crate = crates.create((Math.random() * 800), (Math.random() * 400), 'crate');
+        crate.body.gravity.y = 500;
+        crate.body.immovable = false;
+        crate.animations.add('open', [0, 1, 2, 3], 8, true);
+        crate.isClosed = true;
+        crate.rotation = Math.random();
+        console.log(crate);
+    }
 
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
-
 }
 
 function update() {
 
-    //  Collide the player and the stars with the platforms
+    //  Collide the player and the keys with the platforms
     game.physics.arcade.collide(player, platforms);
-    game.physics.arcade.collide(stars, platforms);
+    game.physics.arcade.collide(keys, platforms);
     game.physics.arcade.collide(crates, platforms);
-    game.physics.arcade.collide(player, crates);
 
-    //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-    game.physics.arcade.overlap(player, stars, collectStar, null, this);
+    // Crates are stackable because I'm lazy
+    game.physics.arcade.collide(crates, crates);
+    // game.physics.arcade.collide(player, crates);
 
+    //  Checks to see if the player overlaps with any of the keys, if he does call the collectKey function
+    game.physics.arcade.overlap(player, keys, collectKey, null, this);
     game.physics.arcade.overlap(player, crates, openCrate, null, this);
 
     //  Reset the players velocity (movement)
     player.body.velocity.x = 0;
 
+
+
+    // if (crates.body.y > 10) {
+    //     crates.kill();
+    // }
+
     if (cursors.left.isDown)
     {
         //  Move to the left
-        player.body.velocity.x = -150;
+        player.body.velocity.x = -250;
 
         player.animations.play('left');
     }
     else if (cursors.right.isDown)
     {
         //  Move to the right
-        player.body.velocity.x = 150;
+        player.body.velocity.x = 250;
 
         player.animations.play('right');
     }
@@ -142,27 +157,30 @@ function update() {
         player.body.velocity.y = -350;
     }
 
+    // Check if any of the crates is opened
+    crates.children.map(function(crate) {
+        if (crate.animations.currentFrame.index > 3) {
+            crate.kill();
+        }
+    })
 }
 
+function openCrate (player, crate) {
+    if((score > 0) && (crate.isClosed)) {
+        crate.body.velocity.y = -350;
+        crate.animations.play('open');
+        crate.lifespan = 300;
+        crate.isClosed = false;
+        score -= 1;
+    }
+    updateScoreText();
+}
 
-
-function collectStar (player, star) {
-     // Removes the star from the screen
-     // star.kill();
-     // star.x = start.x + 1;
-     // console.log(star.body.x);
-     if (player.body.x > star.body.y) {
-         star.body.velocity.x = +50;
-     } else {
-         star.body.velocity.x = -50;
-     }
-
-    //  Add and update the score
-    score += 10;
-    scoreText.text = 'Score: ' + (100 - score);
-
-     // if (score > 50) {
-     //     alert("Gewonnen!");
-     // }
-
+function collectKey (player, key) {
+    key.kill();
+    score += 1;
+    updateScoreText();
+}
+function updateScoreText() {
+    scoreText.text = score + '⚿';
 }

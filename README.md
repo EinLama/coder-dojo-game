@@ -1,6 +1,6 @@
 # Coder Dojo Jump & Run
 
-Ein Beispiel-Spiel für das Coder Dojo.
+Ein Beispiel-Spiel für das Coder Dojo, entstanden aus dem [Phaser](https://phaser.io) Tutorial https://phaser.io/tutorials/making-your-first-phaser-2-game
 
 ## Spiel starten
 
